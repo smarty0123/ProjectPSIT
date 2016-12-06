@@ -8,20 +8,20 @@ importsheet = workbook.sheet_by_name("IM")
 groupsheet = workbook.sheet_by_name("Group")
 continent = [ "Europe", "North America", "Asia", "South America", "Africa", "Oceania"]
 def main():
-    print("Choose graph: ", end='')
-    graph = input()
+    print("SELECT GRAPH: ", end='')
+    graph = input().strip().capitalize()
     if graph == 'Continent':
-        print("CHOOSE UR ACTIVITY: ",end='')
-        activity = input()
-        print("CHOOSE YEARS: ",end='')
+        print("SELECT ACTIVITY: ",end='')
+        activity = input().strip().capitalize()
+        print("SELECT YEAR: ",end='')
         year = int(input())
         con(activity, year)
     if graph in continent:
-        print("CHOOSE YEARS: ",end='')
+        print("SELECT YEAR: ",end='')
         year = int(input())
         country(graph, year)
     if graph == 'Group':
-        print("CHOOSE YEARS: ",end='')
+        print("SELECT YEAR: ",end='')
         year = int(input())
         group(graph, year)
 def readline(status, year):
@@ -146,7 +146,7 @@ def con(activity, y):
     if activity == 'Import':
         import_y = [dct_import[i] for i in continent ]
         cols = ['red', 'green', 'blue', 'yellow', 'pink', 'orange']
-        plt.title('import between Thailand and continents ('+ str(y)+')')
+        plt.title('Import between Thailand and continents ('+ str(y)+')')
         plt.pie(import_y, labels = continent, colors = cols, startangle = 90, autopct = '%1.1f%%')
     plt.show()
 
@@ -175,7 +175,7 @@ def country(c, y):
     plt.legend()
     plt.show()
 def group(c, y):
-    """Imports - exports between Thailand and various groups"""
+    """Imports - Exports between Thailand and Various Groups"""
     group = ['WORLDWIDE', 'APEC', 'RCEP', 'TPP', 'ASEAN', 'EU', 'BIMSTEC', 'EFTA']
     if y == 2013:
         year = 6
@@ -193,7 +193,7 @@ def group(c, y):
     width = 1.01
     plt.bar(export_x, import_y,width, label = 'Import', color = 'red')
     plt.bar(import_x, export_y,width, label = 'Export', color = 'blue')
-    plt.title('Imports - exports between Thailand and various groups '+str(y))
+    plt.title('Imports - Exports between Thailand and Various Groups '+str(y))
     plt.xticks(import_x, group, rotation = 90)
     plt.xlabel('Group')
     plt.ylabel('Values(million USD)')
