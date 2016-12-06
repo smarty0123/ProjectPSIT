@@ -5,26 +5,28 @@ workbook = xlrd.open_workbook("thaitrade.xlsx")
 
 exportsheet = workbook.sheet_by_name("EX")
 importsheet = workbook.sheet_by_name("IM")
+groupsheet = workbook.sheet_by_name("Group")
 continent = [ "Europe", "North America", "Asia", "South America", "Africa", "Oceania"]
 def main():
     print("Choose graph: ", end='')
     graph = input()
-    if graph == 'continent':
+    if graph == 'Continent':
         print("CHOOSE UR ACTIVITY: ",end='')
         activity = input()
         print("CHOOSE YEARS: ",end='')
         year = int(input())
         con(activity, year)
-    if graph == 'Asia':
+    if graph in continent:
         print("CHOOSE YEARS: ",end='')
         year = int(input())
-        asia(year)
-    if graph == 'Europe':
+        country(graph, year)
+    if graph == 'Group':
         print("CHOOSE YEARS: ",end='')
         year = int(input())
-        europe(year)
+        group(graph, year)
 def readline(status, year):
     """read line from file"""
+    group = ['WORLDWIDE', 'APEC', 'RCEP', 'TPP', 'ASEAN', 'EU', 'BIMSTEC', 'EFTA']
     dct_import = {}
     dct_export = {}
     table_export = []
@@ -43,7 +45,9 @@ def readline(status, year):
     oc_import = []
     af_export = []
     af_import = []
-
+    group_import = []
+    group_export = []
+    record_group = []
     for i in continent:
         dct_import.setdefault(i, 0)
         dct_export.setdefault(i, 0)
@@ -53,6 +57,9 @@ def readline(status, year):
 
     total_rows2 = importsheet.nrows
     total_cols2 = importsheet.ncols
+
+    total_rows3 = groupsheet.nrows
+    total_cols3 = groupsheet.ncols
 
     for x in range(total_rows1):
         for y in range(total_cols1):
@@ -95,6 +102,14 @@ def readline(status, year):
             af_import.append(record_import)
         record_import = []
         x += 1
+    for x in range(total_rows3):
+        for y in range(total_cols3):
+            record_group.append(groupsheet.cell(x, y).value)
+        if record_group[0] in group:
+            group_export.append(record_group[year])
+            group_import.append(record_group[year+5])
+        record_group = []
+        x += 1
     if status == '':
         return continent, dct_export, dct_import
     elif status == 'Asia':
@@ -109,7 +124,9 @@ def readline(status, year):
         return af_import, af_export
     elif status == 'Oceania':
         return oc_import, oc_export
-###export 2556 by continent###
+    elif status == 'Group':
+        return group_import, group_export
+
 def con(activity, y):
     """Import-Export between Thailand and continents"""
     if y == 2013:
@@ -131,11 +148,10 @@ def con(activity, y):
         cols = ['red', 'green', 'blue', 'yellow', 'pink', 'orange']
         plt.title('import between Thailand and continents ('+ str(y)+')')
         plt.pie(import_y, labels = continent, colors = cols, startangle = 90, autopct = '%1.1f%%')
-    #autopct = '%1.1f%%' จะเป็นการโชว์ % ในกราฟ
     plt.show()
 
-def asia(y):
-    """Imports - Exports between Thailand and other countries in Asia"""
+def country(c, y):
+    """Imports - Exports between Thailand and other countries"""
     if y == 2013:
         year = 2
     if y == 2014:
@@ -144,45 +160,44 @@ def asia(y):
         year = 4
     if y == 2016:
         year = 6
-    as_import, as_export = readline('Asia', year)
-    export_x = [i for i in range(0, len(as_import)*2, 2)]
-    import_x = [i for i in range(1, len(as_import)*2, 2)]
-    export_y = [i[2] for i in as_export]
-    import_y = [i[2] for i in as_import]
-    country = [i[1] for i in as_export]
-    plt.bar(import_x, import_y,label = 'Import', color = 'red')
-    plt.bar(export_x, export_y,label = 'Export', color = 'blue')
-    plt.title('Asia Import-Export '+str(y))
+    import_c, export_c = readline(c, year)
+    export_x = [i for i in range(0, len(import_c)*2, 2)]
+    import_x = [i for i in range(1, len(import_c)*2, 2)]
+    export_y = [i[2] for i in export_c]
+    import_y = [i[2] for i in import_c]
+    country = [i[1] for i in export_c]
+    plt.bar(export_x, import_y,label = 'Import', color = 'red')
+    plt.bar(import_x, export_y,label = 'Export', color = 'blue')
+    plt.title('Imports - Exports between Thailand and other countries in '+str(c)+' '+str(y))
     plt.xticks(import_x, country, rotation = 90)
     plt.xlabel('Country')
     plt.ylabel('Values(million USD)')
     plt.legend()
     plt.show()
-
-def europe(y):
-    """Imports - Exports between Thailand and other countries in Asia"""
+def group(c, y):
+    """Imports - exports between Thailand and various groups"""
+    group = ['WORLDWIDE', 'APEC', 'RCEP', 'TPP', 'ASEAN', 'EU', 'BIMSTEC', 'EFTA']
     if y == 2013:
-        year = 2
-    if y == 2014:
-        year = 3
-    if y == 2015:
-        year = 4
-    if y == 2016:
         year = 6
-    eu_import, eu_export = readline('Europe', year)
-    export_x = [i for i in range(0, len(eu_import)*2, 2)]
-    import_x = [i for i in range(1, len(eu_import)*2, 2)]
-    export_y = [i[2] for i in eu_export]
-    import_y = [i[2] for i in eu_import]
-    country = [i[1] for i in eu_export]
-    plt.bar(import_x, import_y,label = 'Import', color = 'red')
-    plt.bar(export_x, export_y,label = 'Export', color = 'blue')
-    plt.title('Europe Import-Export '+str(y))
-    plt.xticks(import_x, country, rotation = 90)
-    plt.xlabel('Country')
+    if y == 2014:
+        year = 7
+    if y == 2015:
+        year = 8
+    if y == 2016:
+        year = 10
+    import_g, export_g = readline(c, year)
+    export_x = [i for i in range(0, len(group)*3, 3)]
+    import_x = [i for i in range(1, len(group)*3, 3)]
+    export_y = export_g
+    import_y = import_g
+    width = 1.01
+    plt.bar(export_x, import_y,width, label = 'Import', color = 'red')
+    plt.bar(import_x, export_y,width, label = 'Export', color = 'blue')
+    plt.title('Imports - exports between Thailand and various groups '+str(y))
+    plt.xticks(import_x, group, rotation = 90)
+    plt.xlabel('Group')
     plt.ylabel('Values(million USD)')
     plt.legend()
     plt.show()
 
 main()
-
